@@ -23,7 +23,10 @@ macro(ADD_SOURCE_DEPENDENCIES _source _deps)
 endmacro()
 
 ### glib-mkenums
-find_file (MKENUMS glib-mkenums ${CURRENT_PACKAGES_DIR}/${PORT}/tools/glib)
+find_program (MKENUMS
+    NAMES glib-mkenums
+    HINTS ${GLIB_TOOLS}
+)
 if (MKENUMS MATCHES MKENUMS-NOTFOUND)
     message(FATAL_ERROR "Unable to find glib-mkenums")
 endif ()
