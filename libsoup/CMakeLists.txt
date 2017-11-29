@@ -204,6 +204,14 @@ add_library(libsoup SHARED ${SOUP_SOURCES} ${SOUP_GENERATED_SOURCES} ${SOUP_HEAD
 target_link_libraries(libsoup ${SOUP_LIBRARIES})
 
 if (NOT SKIP_INSTALL_ALL)
+    message(STATUS "Install target is ${CMAKE_INSTALL_PREFIX}")
+
+    if (NOT SKIP_INSTALL_HEADERS)
+        install(FILES ${SOUP_HEADERS} DESTINATION "include/libsoup")
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/soup-enum-types.h DESTINATION "include/libsoup")
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/soup-version.h DESTINATION "include/libsoup")
+    endif ()
+
     if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
         set(CMAKE_INSTALL_LIBDIR lib)
     endif(NOT DEFINED CMAKE_INSTALL_LIBDIR)

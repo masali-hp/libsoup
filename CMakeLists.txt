@@ -117,10 +117,3 @@ if (WIN32)
 endif ()
 
 add_subdirectory("libsoup")
-
-message(STATUS "Install target is ${CMAKE_INSTALL_PREFIX}")
-
-if (NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL)
-    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libsoup" DESTINATION "include/libsoup" FILES_MATCHING PATTERN "*.h")
-    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libsoup" DESTINATION "include/libsoup" FILES_MATCHING PATTERN "*.h")
-endif ()
