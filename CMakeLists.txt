@@ -71,5 +71,49 @@ find_path(GLIB_INCLUDE_DIR
     NAMES glib-object.h
     PATH_SUFFIXES glib-2.0
 )
+find_library(GLIB_LIB
+    NAMES glib-2.0
+)
+find_library(GLIB_OBJECT_LIB
+    NAMES gobject-2.0
+)
+find_library(GLIB_IO_LIB
+    NAMES gio-2.0
+)
+find_library(SQLITE_LIB
+    NAMES sqlite3
+)
+find_library(XML_LIB
+    NAMES libxml2
+)
+find_library(LIBINTL_LIB
+    NAMES libintl
+)
+
+set(SOUP_INCLUDE_PATHS
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/libsoup
+    ${CMAKE_CURRENT_BINARY_DIR}/libsoup
+    ${GLIB_INCLUDE_DIR}
+)
+
+set (SOUP_LIBRARIES
+    ${GLIB_LIB}
+    ${GLIB_OBJECT_LIB}
+    ${GLIB_IO_LIB}
+    ${SQLITE_LIB}
+    ${XML_LIB}
+    ${LIBINTL_LIB}
+)
+
+if (WIN32)
+    list(APPEND SOUP_LIBRARIES ws2_32)
+endif ()
 
 add_subdirectory("libsoup")
+
+message(STATUS "Install target is ${CMAKE_INSTALL_PREFIX}")
+
+install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libsoup" DESTINATION "include/libsoup" FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libsoup" DESTINATION "include/libsoup" FILES_MATCHING PATTERN "*.h")

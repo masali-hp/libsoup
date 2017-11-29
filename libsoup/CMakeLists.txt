@@ -4,13 +4,7 @@ set(SOUP_LIBSLIBS
     ws2_32
 )
 
-set(SOUP_DEFINES -DG_LOG_DOMAIN="libsoup" -DLIBSOUP_COMPILATION)
-
-set(SOUP_INCLUDE_PATHS
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${GLIB_INCLUDE_DIR}
-)
+set(SOUP_DEFINES -DG_LOG_DOMAIN="libsoup" -DLIBSOUP_COMPILATION -DHAVE_CONFIG_H)
 
 set(SOUP_HEADERS
     soup.h
@@ -142,12 +136,6 @@ set(SOUP_SOURCES
     soup-xmlrpc-old.c
 )
 
-set (SOUP_GENERATED_SOURCES
-    ${CMAKE_CURRENT_BINARY_DIR}/soup-enum-types.h
-    ${CMAKE_CURRENT_BINARY_DIR}/soup-version.h
-    ${CMAKE_CURRENT_BINARY_DIR}/soup-enum-types.c
-)
-
 # Generate soup-version.h
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/../configure.ac CONFIGURE_AC)
 string(REGEX MATCHALL "\\[([0-9a-z\\.:/]*)\\]"
@@ -172,17 +160,19 @@ set(SOUP_MAJOR_VERSION ${MAJOR_VERSION})
 set(SOUP_MINOR_VERSION ${MINOR_VERSION})
 set(SOUP_MICRO_VERSION ${MICRO_VERSION})
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/soup-version.h.in
-  ${CMAKE_CURRENT_BINARY_DIR}/soup-version.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/soup-version.h.in ${CMAKE_CURRENT_BINARY_DIR}/soup-version.h)
 
-set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/soup-version.h PROPERTIES GENERATED TRUE)
-
-set (SOUP_LIBRARIES
-    ws2_32
-)
+# Generate config.h
+if (WIN32)
+    set(PACKAGE "libsoup")
+    set(PACKAGE_BUGREPORT "http://bugzilla.gnome.org/enter_bug.cgi?product=libsoup")
+    set(PACKAGE_NAME "libsoup")
+    set(PACKAGE_VERSION ${SOUP_MAJOR_VERSION}.${SOUP_MINOR_VERSION}.${SOUP_MICRO_VERSION})
+    configure_file(${CMAKE_SOURCE_DIR}/config.h.win32.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+endif ()
 
 # TLD rules
-set(TLD_DATA_FILE ${CMAKE_CURRENT_SOURCE_DIR}/data/effective_tld_names.dat)
+set(TLD_DATA_FILE ${CMAKE_SOURCE_DIR}/data/effective_tld_names.dat)
 set(TLD_DATA_INC ${CMAKE_CURRENT_BINARY_DIR}/tld_data.inc)
 add_custom_command(
     OUTPUT ${TLD_DATA_INC}
@@ -199,14 +189,26 @@ MAKE_ENUMS(
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+set (SOUP_GENERATED_SOURCES
+    ${CMAKE_CURRENT_BINARY_DIR}/soup-enum-types.h
+    ${CMAKE_CURRENT_BINARY_DIR}/soup-version.h
+    ${CMAKE_CURRENT_BINARY_DIR}/soup-enum-types.c
+    ${CMAKE_CURRENT_BINARY_DIR}/config.h
+    ${TLD_DATA_INC}
+)
+
 add_definitions(${SOUP_DEFINES})
 include_directories(${SOUP_INCLUDE_PATHS})
 add_library(libsoup SHARED ${SOUP_SOURCES} ${SOUP_GENERATED_SOURCES} ${SOUP_HEADERS})
-# need glib libraries too... and probably includes
-#libsoup_2_4_la_LIBADD =
-#    $(GLIB_LIBS)
-#    $(LIBWS2_32)
-#    $(XML_LIBS)
-#    $(SQLITE_LIBS)
-#    $(KRB5_LIBS)
+
 target_link_libraries(libsoup ${SOUP_LIBRARIES})
+
+if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
+  set(CMAKE_INSTALL_LIBDIR lib)
+endif(NOT DEFINED CMAKE_INSTALL_LIBDIR)
+
+install(TARGETS libsoup
+      RUNTIME DESTINATION bin
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR})
