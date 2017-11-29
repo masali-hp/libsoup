@@ -148,7 +148,33 @@ set (SOUP_GENERATED_SOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/soup-enum-types.c
 )
 
-# TODO: generate soup-version.h
+# Generate soup-version.h
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/../configure.ac CONFIGURE_AC)
+string(REGEX MATCHALL "\\[([0-9a-z\\.:/]*)\\]"
+    CONFIGURE_AC_PACKAGE_INFO ${CONFIGURE_AC}
+)
+
+function(strip_bracket VAR)
+    string(LENGTH ${${VAR}} TMP_LEN)
+    math(EXPR TMP_LEN ${TMP_LEN}-2)
+    string(SUBSTRING ${${VAR}} 1 ${TMP_LEN} TMP_SUB)
+    set(${VAR} ${TMP_SUB} PARENT_SCOPE)
+endfunction()
+
+list(GET CONFIGURE_AC_PACKAGE_INFO 0 MAJOR_VERSION)
+strip_bracket(MAJOR_VERSION)
+list(GET CONFIGURE_AC_PACKAGE_INFO 1 MINOR_VERSION)
+strip_bracket(MINOR_VERSION)
+list(GET CONFIGURE_AC_PACKAGE_INFO 2 MICRO_VERSION)
+strip_bracket(MICRO_VERSION)
+
+set(SOUP_MAJOR_VERSION ${MAJOR_VERSION})
+set(SOUP_MINOR_VERSION ${MINOR_VERSION})
+set(SOUP_MICRO_VERSION ${MICRO_VERSION})
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/soup-version.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/soup-version.h)
+
 set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/soup-version.h PROPERTIES GENERATED TRUE)
 
 set (SOUP_LIBRARIES
