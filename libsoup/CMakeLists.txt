@@ -9,8 +9,8 @@ set(SOUP_DEFINES -DG_LOG_DOMAIN="libsoup" -DLIBSOUP_COMPILATION)
 set(SOUP_INCLUDE_PATHS
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
+    ${GLIB_INCLUDE_DIR}
 )
-#add_definitions(SOUP_DEFINES)
 
 set(SOUP_HEADERS
     soup.h
@@ -173,6 +173,7 @@ MAKE_ENUMS(
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+add_definitions(${SOUP_DEFINES})
 include_directories(${SOUP_INCLUDE_PATHS})
 add_library(libsoup SHARED ${SOUP_SOURCES} ${SOUP_GENERATED_SOURCES} ${SOUP_HEADERS})
 # need glib libraries too... and probably includes

@@ -67,4 +67,9 @@ macro(MAKE_ENUMS _enum_header_output _enum_source_output _source_headers _workin
     set_source_files_properties(${_enum_source_output} PROPERTIES GENERATED TRUE)
 endmacro()
 
+find_path(GLIB_INCLUDE_DIR
+    NAMES glib-object.h
+    PATH_SUFFIXES glib-2.0
+)
+
 add_subdirectory("libsoup")
