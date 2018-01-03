@@ -1,10 +1,14 @@
-## Process this file with automake to produce Makefile.in
+## This CMakeLists.txt build recipe was created to build on Windows;
+## it has not been tested on non-Windows platforms.  It is likely missing
+## some of the features present in the automake version (documentation, etc.).
 
-set(SOUP_LIBSLIBS
-    ws2_32
-)
+if (WIN32)
+    set(SOUP_LIBSLIBS
+        ws2_32
+    )
+endif ()
 
-set(SOUP_DEFINES -DG_LOG_DOMAIN="libsoup" -DLIBSOUP_COMPILATION -DHAVE_CONFIG_H)
+set(SOUP_DEFINES -DG_LOG_DOMAIN="libsoup" -DLIBSOUP_COMPILATION -DHAVE_CONFIG_H -DDLL_EXPORT)
 
 set(SOUP_HEADERS
     soup.h
